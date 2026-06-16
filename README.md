@@ -18,9 +18,9 @@
 После публикации репозитория прямые ссылки будут выглядеть так:
 
 ```text
-https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/tampermonkey-scripts/main/chatgpt-close-popup.user.js
-https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/tampermonkey-scripts/main/fbfind-cleaner.user.js
-https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/tampermonkey-scripts/main/kinokino-button.user.js
+https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/chatgpt-close-popup.user.js
+https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/fbfind-cleaner.user.js
+https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/kinokino-button.user.js
 ```
 
 ## Обновления
