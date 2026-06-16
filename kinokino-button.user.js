@@ -3,7 +3,7 @@
 // @namespace    local.sitebutton.kinokino
 // @version      1.2.0
 // @description  Adds a KinoKino navigation button to Kinopoisk film and series pages.
-// @author       Sitebutton
+// @author       Horndayel
 // @match        https://www.kinopoisk.ru/film/*
 // @match        https://www.kinopoisk.ru/series/*
 // @match        https://kinopoisk.ru/film/*

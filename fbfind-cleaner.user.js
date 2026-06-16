@@ -3,7 +3,7 @@
 // @namespace    local.fbfind.cleaner
 // @version      1.0.0
 // @description  Убирает рекламу, Telegram-промо и лишние сторонние вставки на fbfind.
-// @author       local
+// @author       Horndayel
 // @match        https://fbfind.top/*
 // @match        https://www.fbfind.top/*
 // @match        http://fbfind.top/*

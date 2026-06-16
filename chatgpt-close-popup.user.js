@@ -3,6 +3,7 @@
 // @namespace    local
 // @version      1.0
 // @description  Закрывает только уведомление "Спросите нашу лучшую модель GPT-5.5 Pro"
+// @author       Horndayel
 // @match        https://chatgpt.com/*
 // @match        https://*.chatgpt.com/*
 // @run-at       document-idle
