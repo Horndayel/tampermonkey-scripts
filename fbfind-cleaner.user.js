@@ -4,6 +4,8 @@
 // @version      1.0.0
 // @description  Убирает рекламу, Telegram-промо и лишние сторонние вставки на fbfind.
 // @author       Horndayel
+// @updateURL    https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/fbfind-cleaner.user.js
+// @downloadURL  https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/fbfind-cleaner.user.js
 // @match        https://fbfind.top/*
 // @match        https://www.fbfind.top/*
 // @match        http://fbfind.top/*

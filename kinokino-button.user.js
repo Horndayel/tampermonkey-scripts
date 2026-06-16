@@ -4,6 +4,8 @@
 // @version      1.2.0
 // @description  Adds a KinoKino navigation button to Kinopoisk film and series pages.
 // @author       Horndayel
+// @updateURL    https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/kinokino-button.user.js
+// @downloadURL  https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/kinokino-button.user.js
 // @match        https://www.kinopoisk.ru/film/*
 // @match        https://www.kinopoisk.ru/series/*
 // @match        https://kinopoisk.ru/film/*

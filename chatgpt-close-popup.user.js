@@ -4,6 +4,8 @@
 // @version      1.0
 // @description  Закрывает только уведомление "Спросите нашу лучшую модель GPT-5.5 Pro"
 // @author       Horndayel
+// @updateURL    https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/chatgpt-close-popup.user.js
+// @downloadURL  https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/chatgpt-close-popup.user.js
 // @match        https://chatgpt.com/*
 // @match        https://*.chatgpt.com/*
 // @run-at       document-idle
