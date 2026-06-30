@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         ChatGPT close only GPT-5.5 Pro notice
+// @name         ChatGPT close Pro promo notices
 // @namespace    local
-// @version      1.0
-// @description  Закрывает только уведомление "Спросите нашу лучшую модель GPT-5.5 Pro"
+// @version      2.0.0
+// @description  Закрывает промо-уведомления ChatGPT о переходе на Pro.
 // @author       Horndayel
 // @updateURL    https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/chatgpt-close-popup.user.js
 // @downloadURL  https://raw.githubusercontent.com/Horndayel/tampermonkey-scripts/main/chatgpt-close-popup.user.js
@@ -15,62 +15,94 @@
     'use strict';
 
     const DEBUG = true;
+    const LOG_PREFIX = '[ChatGPT Pro notice closer]';
+    const handledNotices = new WeakSet();
 
-    const TARGET_TITLE = 'Спросите нашу лучшую модель GPT-5.5 Pro';
-    const TARGET_TEXT = 'GPT-5.5 Pro оптимизирован для сложных задач';
+    const KNOWN_NOTICES = [
+        {
+            title: 'Спросите нашу лучшую модель GPT-5.5 Pro',
+            text: 'GPT-5.5 Pro оптимизирован для сложных задач'
+        },
+        {
+            title: 'Повысьте точность при работе со сложным кодом',
+            text: 'используйте передовую модель Pro для отладки сложных систем'
+        }
+    ];
 
     function log(...args) {
-        if (DEBUG) {
-            console.log('[GPT-5.5 Pro notice closer]', ...args);
-        }
+        if (DEBUG) console.log(LOG_PREFIX, ...args);
     }
 
-    function isVisible(el) {
-        if (!el) return false;
+    function normalizedText(element) {
+        return (element.innerText || element.textContent || '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
 
-        const style = window.getComputedStyle(el);
-        const rect = el.getBoundingClientRect();
+    function isVisible(element) {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
 
-        return (
-            style.display !== 'none' &&
+        return style.display !== 'none' &&
             style.visibility !== 'hidden' &&
             style.opacity !== '0' &&
             rect.width > 0 &&
-            rect.height > 0
-        );
+            rect.height > 0;
     }
 
-    function closeTargetNotice() {
-        const notices = document.querySelectorAll('aside');
+    function matchesKnownNotice(notice) {
+        const text = normalizedText(notice);
+        return KNOWN_NOTICES.some(function (target) {
+            return text.includes(target.title) && text.includes(target.text);
+        });
+    }
 
-        for (const notice of notices) {
-            if (!isVisible(notice)) continue;
+    function matchesComposerPromo(notice) {
+        if (!notice.closest('[data-prompt-textarea-header]')) return false;
+        if (!notice.querySelector('h3')) return false;
 
-            const text = notice.innerText || notice.textContent || '';
+        const closeButton = notice.querySelector('button[data-testid="close-button"]');
+        if (!closeButton) return false;
 
-            const isTargetNotice =
-                text.includes(TARGET_TITLE) &&
-                text.includes(TARGET_TEXT);
-
-            if (!isTargetNotice) continue;
-
-            const closeButton = notice.querySelector(
-                'button[data-testid="close-button"][aria-label="Закрыть"]'
+        const actionButton = Array.from(notice.querySelectorAll('button')).find(function (button) {
+            return button !== closeButton && (
+                button.classList.contains('btn-primary') ||
+                button.querySelector('.btn-primary')
             );
+        });
 
-            if (!closeButton) {
-                log('Нужная плашка найдена, но кнопка закрытия не найдена');
-                return false;
-            }
+        return Boolean(actionButton);
+    }
 
-            closeButton.click();
-            log('Плашка GPT-5.5 Pro закрыта');
-            showDebugBadge('GPT-5.5 Pro notice closed');
+    function closeNotice(notice) {
+        if (handledNotices.has(notice) || !isVisible(notice)) return false;
+        if (!matchesKnownNotice(notice) && !matchesComposerPromo(notice)) return false;
 
-            return true;
+        const closeButton = notice.querySelector('button[data-testid="close-button"]');
+        if (!closeButton || !isVisible(closeButton)) {
+            log('Нужное уведомление найдено, но видимая кнопка закрытия отсутствует', notice);
+            return false;
         }
 
-        return false;
+        handledNotices.add(notice);
+        closeButton.click();
+        log('Промо-уведомление закрыто', {
+            title: normalizedText(notice.querySelector('h3') || notice),
+            structuralMatch: matchesComposerPromo(notice)
+        });
+        showDebugBadge('Pro notice closed');
+        return true;
+    }
+
+    function closeTargetNotices() {
+        let closed = false;
+        const notices = document.querySelectorAll('aside, [role="dialog"]');
+
+        for (const notice of notices) {
+            if (closeNotice(notice)) closed = true;
+        }
+
+        return closed;
     }
 
     function showDebugBadge(message) {
@@ -87,7 +119,7 @@
             bottom: '16px',
             zIndex: '999999',
             padding: '8px 12px',
-            borderRadius: '10px',
+            borderRadius: '8px',
             background: 'rgba(0, 0, 0, 0.8)',
             color: 'white',
             fontSize: '13px',
@@ -96,23 +128,29 @@
         });
 
         document.body.appendChild(badge);
-
-        setTimeout(() => {
+        window.setTimeout(function () {
             badge.remove();
         }, 3000);
     }
 
-    log('Скрипт запущен');
+    let scanScheduled = false;
 
-    closeTargetNotice();
+    function scheduleScan() {
+        if (scanScheduled) return;
+        scanScheduled = true;
 
-    const observer = new MutationObserver(() => {
-        closeTargetNotice();
-    });
+        window.requestAnimationFrame(function () {
+            scanScheduled = false;
+            closeTargetNotices();
+        });
+    }
 
+    log('Скрипт запущен, версия 2.0.0');
+    scheduleScan();
+
+    const observer = new MutationObserver(scheduleScan);
     observer.observe(document.body, {
         childList: true,
         subtree: true
     });
-
 })();
